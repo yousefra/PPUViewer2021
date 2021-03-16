@@ -9,7 +9,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ppuviewer.cpp" line="23"/>
+        <location filename="PPUViewer.cpp" line="23"/>
         <source>2D Graphics: Drawing Elementary Shapes</source>
         <translation type="unfinished"></translation>
     </message>
