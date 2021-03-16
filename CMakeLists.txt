@@ -1,39 +1,62 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 
-project(CGFrameWork)
+project(PPUViewer LANGUAGES CXX)
 
-INCLUDE_DIRECTORIES (
-#   D:/Develope/Libs/Glut/include
-)
-
-find_package(Qt5Widgets)
-find_package(Qt5Core)
-find_package(Qt5Gui)
-find_package(Qt5OpenGL)
-
-find_package(OpenGL)
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-SET( CGFrameWork_SRCS
-   main.cpp
-   RenderWidget.cpp
-   RenderWidget.h
-   PPUViewer.cpp
-   PPUViewer.h
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# QtCreator supports the following variables for Android, which are identical to qmake Android variables.
+# Check https://doc.qt.io/qt/deployment-android.html for more information.
+# They need to be set before the find_package( ...) calls below.
+
+#if(ANDROID)
+#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+#    if (ANDROID_ABI STREQUAL "armeabi-v7a")
+#        set(ANDROID_EXTRA_LIBS
+#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libcrypto.so
+#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libssl.so)
+#    endif()
+#endif()
+
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets LinguistTools REQUIRED)
+
+set(TS_FILES PPUViewer_en_US.ts)
+
+set(PROJECT_SOURCES
+    main.cpp
+    renderwidget.cpp
+    renderwidget.h
+    ppuviewer.cpp
+    ppuviewer.h
+    ppuviewer.ui
+    ${TS_FILES}
 )
 
-LINK_LIBRARIES(
-#   D:/Develope/Libs/Glut/Lib/glut32.lib
-#   ${OPENGL_glu_LIBRARY}
-#   ${OPENGL_LIBRARY}
-)
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_executable(PPUViewer
+        ${PROJECT_SOURCES}
+    )
 
+    qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+else()
+    if(ANDROID)
+        add_library(PPUViewer SHARED
+            ${PROJECT_SOURCES}
+        )
+    else()
+        add_executable(PPUViewer
+            ${PROJECT_SOURCES}
+        )
+    endif()
 
-add_executable(CGFrameWork ${CGFrameWork_SRCS})
-target_link_libraries (CGFrameWork Qt5::Widgets)
+    qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+endif()
 
-#qt5_use_modules(CGFrameWork Widgets OpenGL)
-#target_link_libraries(CGFrameWork ${QT_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries(PPUViewer PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
